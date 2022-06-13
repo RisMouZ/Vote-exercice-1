@@ -8,7 +8,6 @@ contract Voting is Ownable {
 
     uint winningProposalId;
 
-
     struct Voter {
         bool isRegistered;
         bool hasVoted;
