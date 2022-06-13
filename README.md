@@ -24,3 +24,4 @@ Le vote se déroule normalement.
 
 Si un candidat est trouvé bravo à lui. Sinon, le vote blanc l'emportant, l'élection est relancé comme dans la version 1 à l'exception des candidats précédents ne pouvant 
 pas se représenter, n'ayant pas convaincu, afin de recommencer l'élection avec des idées neuves.
+Les anciens candidats ne pouvant plus se représenter peuvent quand même voter.
