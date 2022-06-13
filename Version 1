@@ -101,6 +101,10 @@ contract Voting is Ownable {
         return proposalsArray;
     }
 
+    function getAdresseArray() public view returns(Adresse[] memory) {
+        return adresseArray;
+    }
+
     function getWinner() public view returns(uint) {
         require(statut == WorkflowStatus.VotesTallied, "Vous ne pouvez pas faire ca");
         return winningProposalId;
