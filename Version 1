@@ -7,8 +7,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Voting is Ownable {
 
     uint winningProposalId;
-    uint totalVotes;
-    bool blankVoteWin;
 
     struct Voter {
         bool isRegistered;
@@ -19,6 +17,10 @@ contract Voting is Ownable {
     struct Proposal {
         string description;
         uint voteCount;
+    }
+
+    struct Adresse {
+        address adresse;
     }
 
     enum WorkflowStatus {
@@ -37,6 +39,7 @@ contract Voting is Ownable {
     event Voted (address voter, uint proposalId);
 
     mapping (address => Voter) public votersMapping;
+    Adresse[] adresseArray;
     Proposal[] proposalsArray;
 
     // Ce constructor a pour but de créer, dès le déploiement et par l'émetteur, une proposition 
@@ -49,6 +52,7 @@ contract Voting is Ownable {
     function addVoter(address _addr) public onlyOwner {
         require(statut == WorkflowStatus.RegisteringVoters, "Vous ne pouvez pas faire ca");
         votersMapping[_addr]= Voter(true, false, 0);
+        adresseArray.push(Adresse(_addr));
         emit VoterRegistered(_addr);
     }
 
@@ -62,18 +66,29 @@ contract Voting is Ownable {
         require(statut == WorkflowStatus.VotingSessionStarted && votersMapping[msg.sender].hasVoted == false && votersMapping[msg.sender].isRegistered == true && _id<proposalsArray.length, "Vous ne pouvez pas faire ca");
         votersMapping[msg.sender] = Voter(true, true, _id);
         proposalsArray[_id].voteCount ++;
-        totalVotes ++;
         emit Voted(msg.sender, _id);
     } 
 
     function whoWin() public onlyOwner {
         require(statut == WorkflowStatus.VotingSessionEnded);
-        uint highestVotesProposal;
+        uint highestVotesProposal = 0;
         for(uint i=0; i<proposalsArray.length; i++) {
             if(proposalsArray[i].voteCount > highestVotesProposal) {
+                highestVotesProposal = proposalsArray[i].voteCount;
                 winningProposalId = i;
             }
         }
+    }
+
+    function resetVote(string memory _description) public onlyOwner {
+        require(statut == WorkflowStatus.VotesTallied && winningProposalId == 0, "Vous ne pouvez pas faire ca");
+        statut = WorkflowStatus(0);
+        delete proposalsArray;
+        proposalsArray.push(Proposal(_description, 0));
+        for(uint i=0; i<adresseArray.length; i++) {
+           votersMapping[adresseArray[i].adresse] = Voter(true, false, 0);
+        }
+        emit WorkflowStatusChange(WorkflowStatus(5), WorkflowStatus(0));
     }
 
     function getProposalsArray() public view returns(Proposal[] memory) {
@@ -89,6 +104,6 @@ contract Voting is Ownable {
     function getWinner() public view returns(uint) {
         require(statut == WorkflowStatus.VotesTallied, "Vous ne pouvez pas faire ca");
         return winningProposalId;
-
     }
+
 }
