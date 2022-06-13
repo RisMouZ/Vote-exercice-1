@@ -91,14 +91,14 @@ contract Voting is Ownable {
         emit WorkflowStatusChange(WorkflowStatus(5), WorkflowStatus(0));
     }
 
-    function getProposalsArray() public view returns(Proposal[] memory) {
-        return proposalsArray;
-    }
-
     function setWorkflowStatus(WorkflowStatus _num) public onlyOwner {
         require(uint(_num) < 6, "Ce statut n'existe pas");
         statut = _num;
         emit WorkflowStatusChange(WorkflowStatus(uint(_num)-1), WorkflowStatus(uint (_num)));
+    }
+
+    function getProposalsArray() public view returns(Proposal[] memory) {
+        return proposalsArray;
     }
 
     function getWinner() public view returns(uint) {
